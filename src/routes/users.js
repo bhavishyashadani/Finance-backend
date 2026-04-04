@@ -1,0 +1,16 @@
+const express = require('express');
+const router = express.Router();
+
+const { getAllUsers, getUserById, updateUser, deleteUser } = require('../controllers/userController');
+const { protect, authorize } = require('../middleware/auth');
+const { updateUserRules, validate } = require('../middleware/validators');
+
+// All user management routes require admin role
+router.use(protect, authorize('admin'));
+
+router.get('/', getAllUsers);
+router.get('/:id', getUserById);
+router.patch('/:id', updateUserRules, validate, updateUser);
+router.delete('/:id', deleteUser);
+
+module.exports = router;
