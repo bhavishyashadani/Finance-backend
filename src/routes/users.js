@@ -4,6 +4,7 @@ const router = express.Router();
 const { getAllUsers, getUserById, updateUser, deleteUser } = require('../controllers/userController');
 const { protect, authorize } = require('../middleware/auth');
 const { updateUserRules, validate } = require('../middleware/validators');
+const { ROLES } = require('../../config/roles');
 
 /**
  * @swagger
@@ -32,7 +33,6 @@ const { updateUserRules, validate } = require('../middleware/validators');
  *         name: isActive
  *         schema:
  *           type: boolean
- *         description: Filter by active status
  *       - in: query
  *         name: page
  *         schema:
@@ -70,7 +70,7 @@ const { updateUserRules, validate } = require('../middleware/validators');
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/', protect, authorize('admin'), getAllUsers);
+router.get('/', protect, authorize(ROLES.ADMIN), getAllUsers);
 
 /**
  * @swagger
@@ -86,7 +86,6 @@ router.get('/', protect, authorize('admin'), getAllUsers);
  *         required: true
  *         schema:
  *           type: string
- *         description: User ID
  *     responses:
  *       200:
  *         description: User found
@@ -110,14 +109,13 @@ router.get('/', protect, authorize('admin'), getAllUsers);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/:id', protect, authorize('admin'), getUserById);
+router.get('/:id', protect, authorize(ROLES.ADMIN), getUserById);
 
 /**
  * @swagger
  * /api/users/{id}:
  *   patch:
  *     summary: Update user role or status
- *     description: Admin can update a user's role, active status, or name.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -127,7 +125,6 @@ router.get('/:id', protect, authorize('admin'), getUserById);
  *         required: true
  *         schema:
  *           type: string
- *         description: User ID
  *     requestBody:
  *       required: true
  *       content:
@@ -171,7 +168,7 @@ router.get('/:id', protect, authorize('admin'), getUserById);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.patch('/:id', protect, authorize('admin'), updateUserRules, validate, updateUser);
+router.patch('/:id', protect, authorize(ROLES.ADMIN), updateUserRules, validate, updateUser);
 
 /**
  * @swagger
@@ -188,7 +185,6 @@ router.patch('/:id', protect, authorize('admin'), updateUserRules, validate, upd
  *         required: true
  *         schema:
  *           type: string
- *         description: User ID
  *     responses:
  *       200:
  *         description: User deleted successfully
@@ -216,6 +212,6 @@ router.patch('/:id', protect, authorize('admin'), updateUserRules, validate, upd
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete('/:id', protect, authorize('admin'), deleteUser);
+router.delete('/:id', protect, authorize(ROLES.ADMIN), deleteUser);
 
 module.exports = router;

@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-
-const ROLES = ['viewer', 'analyst', 'admin'];
+const { ALL_ROLES } = require('../../config/roles');
 
 const userSchema = new mongoose.Schema(
   {
@@ -24,11 +23,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Password is required'],
       minlength: [6, 'Password must be at least 6 characters'],
-      select: false, // never return password in queries by default
+      select: false,
     },
     role: {
       type: String,
-      enum: { values: ROLES, message: 'Role must be viewer, analyst, or admin' },
+      enum: {
+        values: ALL_ROLES,
+        message: `Role must be one of: ${ALL_ROLES.join(', ')}`,
+      },
       default: 'viewer',
     },
     isActive: {
@@ -39,19 +41,16 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Hash password before saving
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
 
-// Compare password method
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Remove sensitive fields when converting to JSON
 userSchema.methods.toJSON = function () {
   const obj = this.toObject();
   delete obj.password;

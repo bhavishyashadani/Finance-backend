@@ -17,7 +17,7 @@ const { registerRules, loginRules, validate } = require('../middleware/validator
  * /api/auth/register:
  *   post:
  *     summary: Register a new user
- *     description: Creates a new user account. Role defaults to **viewer** unless the request is made by an admin.
+ *     description: Creates a new user account. Role defaults to viewer unless the request is made by an admin.
  *     tags: [Auth]
  *     security: []
  *     requestBody:

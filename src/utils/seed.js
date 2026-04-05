@@ -3,45 +3,43 @@ const mongoose = require('mongoose');
 const User = require('../models/User');
 const Record = require('../models/Record');
 const connectDB = require('../../config/db');
+const { ROLES } = require('../../config/roles');
 
 const seedData = async () => {
   await connectDB();
 
-  // Clean existing data
   await User.deleteMany({});
   await Record.deleteMany({});
   console.log('Cleared existing data.');
 
-  // Create users
   const admin = await User.create({
     name: 'Admin User',
     email: 'admin@finance.com',
     password: 'admin123',
-    role: 'admin',
+    role: ROLES.ADMIN,
   });
 
   const analyst = await User.create({
     name: 'Analyst User',
     email: 'analyst@finance.com',
     password: 'analyst123',
-    role: 'analyst',
+    role: ROLES.ANALYST,
   });
 
-  const viewer=await User.create({
+  await User.create({
     name: 'Viewer User',
     email: 'viewer@finance.com',
     password: 'viewer123',
-    role: 'viewer',
+    role: ROLES.VIEWER,
   });
 
   console.log('Users created.');
 
-  // Create sample financial records
   const records = [
     { amount: 75000, type: 'income', category: 'salary', date: new Date('2026-01-05'), notes: 'January salary', createdBy: admin._id },
     { amount: 15000, type: 'income', category: 'freelance', date: new Date('2026-01-12'), notes: 'Web design project', createdBy: admin._id },
     { amount: 5000, type: 'expense', category: 'rent', date: new Date('2026-01-01'), notes: 'Office rent', createdBy: admin._id },
-    { amount: 2000, type: 'expense', category: 'utilities', date: new Date('2026-01-10'), notes: 'Electricity & internet', createdBy: admin._id },
+    { amount: 2000, type: 'expense', category: 'utilities', date: new Date('2026-01-10'), notes: 'Electricity and internet', createdBy: admin._id },
     { amount: 3500, type: 'expense', category: 'food', date: new Date('2026-01-15'), notes: 'Team lunch and snacks', createdBy: admin._id },
     { amount: 75000, type: 'income', category: 'salary', date: new Date('2026-02-05'), notes: 'February salary', createdBy: admin._id },
     { amount: 8000, type: 'income', category: 'investment', date: new Date('2026-02-20'), notes: 'Stock dividends', createdBy: analyst._id },
@@ -51,7 +49,6 @@ const seedData = async () => {
     { amount: 20000, type: 'income', category: 'freelance', date: new Date('2026-03-18'), notes: 'API development contract', createdBy: analyst._id },
     { amount: 6000, type: 'expense', category: 'healthcare', date: new Date('2026-03-22'), notes: 'Team health checkup', createdBy: admin._id },
     { amount: 9000, type: 'expense', category: 'education', date: new Date('2026-03-28'), notes: 'Online course subscriptions', createdBy: admin._id },
-    { amount: 9000, type: 'expense', category: 'education', date: new Date('2026-03-28'), notes: 'Online course subscriptions', createdBy: viewer._id }
   ];
 
   await Record.insertMany(records);

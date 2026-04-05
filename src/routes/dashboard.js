@@ -9,6 +9,7 @@ const {
   getWeeklyTrends,
 } = require('../controllers/dashboardController');
 const { protect, authorize } = require('../middleware/auth');
+const { ROLES } = require('../../config/roles');
 
 /**
  * @swagger
@@ -51,7 +52,7 @@ const { protect, authorize } = require('../middleware/auth');
  *                       items:
  *                         $ref: '#/components/schemas/Record'
  */
-router.get('/recent-activity', protect, authorize('viewer', 'analyst', 'admin'), getRecentActivity);
+router.get('/recent-activity', protect, authorize(ROLES.VIEWER, ROLES.ANALYST, ROLES.ADMIN), getRecentActivity);
 
 /**
  * @swagger
@@ -92,7 +93,7 @@ router.get('/recent-activity', protect, authorize('viewer', 'analyst', 'admin'),
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/summary', protect, authorize('analyst', 'admin'), getSummary);
+router.get('/summary', protect, authorize(ROLES.ANALYST, ROLES.ADMIN), getSummary);
 
 /**
  * @swagger
@@ -147,7 +148,7 @@ router.get('/summary', protect, authorize('analyst', 'admin'), getSummary);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/category-totals', protect, authorize('analyst', 'admin'), getCategoryTotals);
+router.get('/category-totals', protect, authorize(ROLES.ANALYST, ROLES.ADMIN), getCategoryTotals);
 
 /**
  * @swagger
@@ -205,7 +206,7 @@ router.get('/category-totals', protect, authorize('analyst', 'admin'), getCatego
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/monthly-trends', protect, authorize('analyst', 'admin'), getMonthlyTrends);
+router.get('/monthly-trends', protect, authorize(ROLES.ANALYST, ROLES.ADMIN), getMonthlyTrends);
 
 /**
  * @swagger
@@ -254,6 +255,6 @@ router.get('/monthly-trends', protect, authorize('analyst', 'admin'), getMonthly
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/weekly-trends', protect, authorize('analyst', 'admin'), getWeeklyTrends);
+router.get('/weekly-trends', protect, authorize(ROLES.ANALYST, ROLES.ADMIN), getWeeklyTrends);
 
 module.exports = router;

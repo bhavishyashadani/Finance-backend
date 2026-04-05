@@ -15,6 +15,7 @@ const {
   recordFilterRules,
   validate,
 } = require('../middleware/validators');
+const { ROLES } = require('../../config/roles');
 
 /**
  * @swagger
@@ -60,7 +61,6 @@ const {
  *         schema:
  *           type: string
  *           example: salary
- *         description: Search keyword in notes
  *       - in: query
  *         name: page
  *         schema:
@@ -98,7 +98,7 @@ const {
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/', protect, authorize('viewer', 'analyst', 'admin'), recordFilterRules, validate, getAllRecords);
+router.get('/', protect, authorize(ROLES.VIEWER, ROLES.ANALYST, ROLES.ADMIN), recordFilterRules, validate, getAllRecords);
 
 /**
  * @swagger
@@ -137,7 +137,7 @@ router.get('/', protect, authorize('viewer', 'analyst', 'admin'), recordFilterRu
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/:id', protect, authorize('viewer', 'analyst', 'admin'), getRecordById);
+router.get('/:id', protect, authorize(ROLES.VIEWER, ROLES.ANALYST, ROLES.ADMIN), getRecordById);
 
 /**
  * @swagger
@@ -203,7 +203,7 @@ router.get('/:id', protect, authorize('viewer', 'analyst', 'admin'), getRecordBy
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/', protect, authorize('admin'), createRecordRules, validate, createRecord);
+router.post('/', protect, authorize(ROLES.ADMIN), createRecordRules, validate, createRecord);
 
 /**
  * @swagger
@@ -274,7 +274,7 @@ router.post('/', protect, authorize('admin'), createRecordRules, validate, creat
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put('/:id', protect, authorize('admin'), updateRecordRules, validate, updateRecord);
+router.put('/:id', protect, authorize(ROLES.ADMIN), updateRecordRules, validate, updateRecord);
 
 /**
  * @swagger
@@ -318,6 +318,6 @@ router.put('/:id', protect, authorize('admin'), updateRecordRules, validate, upd
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete('/:id', protect, authorize('admin'), deleteRecord);
+router.delete('/:id', protect, authorize(ROLES.ADMIN), deleteRecord);
 
 module.exports = router;
