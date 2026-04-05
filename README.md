@@ -2,66 +2,71 @@
 
 ## Overview
 
-This project is a backend system designed for a finance dashboard that supports:
+This project is a backend system for a finance dashboard that enables:
 
 * Role-based user management
 * Financial records CRUD operations
-* Dashboard analytics APIs
-* Secure access control enforcement
+* Dashboard analytics
+* Secure access control
+* API documentation via Swagger
 
-The system is built with a strong focus on **clean architecture, maintainability, and clear business logic**, aligning with the requirements of the backend engineering assignment. 
-
----
-
-## Key Highlights
-
-* Role-Based Access Control (RBAC) implemented via middleware
-* Aggregated analytics APIs (monthly trends, category totals, summaries)
-* Clean separation of concerns (routes → controllers → models → middleware)
-* Secure authentication using JWT
-* Scalable and modular folder structure
-* Strong validation and centralized error handling
+The system is designed with a focus on **clean architecture, scalability, and maintainability**, fulfilling all requirements of a backend engineering assignment.
 
 ---
 
-## Design Approach (Very Important)
+## Key Features
 
-This backend is designed with the following principles:
+* Role-Based Access Control (RBAC)
+* JWT Authentication & Authorization
+* Financial Records CRUD with filtering & pagination
+* Dashboard analytics (summary, trends, category insights)
+* Swagger API documentation
+* Centralized error handling
+* Input validation using express-validator
+* Rate limiting for security
+* Soft delete for audit safety
+
+---
+
+## Design Philosophy
 
 ### 1. Separation of Concerns
 
-* Routes handle HTTP layer
-* Controllers handle business logic
-* Models define schema
-* Middleware handles cross-cutting concerns (auth, validation)
+* Routes → Handle HTTP requests
+* Controllers → Business logic
+* Models → Database schema
+* Middleware → Auth, validation, error handling
+* Config → DB, roles, Swagger setup
 
 ### 2. Role-Based Architecture
 
-* Permissions enforced at middleware level (`authorize(...)`)
-* Prevents duplication of access logic across controllers
+* Roles defined centrally (`config/roles.js`)
+* Access enforced via middleware (`authorize(...)`)
+* Prevents duplication and improves maintainability
 
 ### 3. Scalable API Design
 
 * Pagination, filtering, and search supported
-* Easily extendable for future features (e.g., reports, exports)
+* APIs structured for dashboard consumption
 
-### 4. Data Integrity
+### 4. Documentation First Approach
 
-* Predefined categories ensure consistent analytics
-* Soft delete ensures audit safety
+* Swagger integration for API exploration and testing
+* Makes backend easier to understand and integrate
 
 ---
 
 ## Tech Stack
 
-| Layer          | Technology         | Reason                             |
-| -------------- | ------------------ | ---------------------------------- |
-| Runtime        | Node.js            | Async, scalable backend runtime    |
-| Framework      | Express.js         | Lightweight & flexible             |
-| Database       | MongoDB + Mongoose | Flexible schema for financial data |
-| Authentication | JWT                | Stateless & scalable               |
-| Validation     | express-validator  | Clean request validation           |
-| Security       | express-rate-limit | Prevent abuse                      |
+| Layer          | Technology         | Purpose                   |
+| -------------- | ------------------ | ------------------------- |
+| Runtime        | Node.js            | Async backend execution   |
+| Framework      | Express.js         | Lightweight API framework |
+| Database       | MongoDB + Mongoose | Flexible data modeling    |
+| Authentication | JWT                | Stateless authentication  |
+| Validation     | express-validator  | Input validation          |
+| Security       | express-rate-limit | Prevent abuse             |
+| Docs           | Swagger            | API documentation         |
 
 ---
 
@@ -69,15 +74,40 @@ This backend is designed with the following principles:
 
 ```
 finance-backend/
-├── config/                # Database configuration
+├── config/
+│   ├── db.js              # MongoDB connection
+│   ├── roles.js           # Role definitions
+│   └── swagger.js         # Swagger configuration
+│
 ├── src/
 │   ├── app.js             # Entry point
-│   ├── models/            # Mongoose schemas
+│
 │   ├── controllers/       # Business logic
+│   │   ├── authController.js
+│   │   ├── userController.js
+│   │   ├── recordController.js
+│   │   └── dashboardController.js
+│
+│   ├── models/            # Mongoose schemas
+│   │   ├── User.js
+│   │   └── Record.js
+│
 │   ├── routes/            # API routes
-│   ├── middleware/        # Auth, validation, error handling
-│   └── utils/             # Seed script
+│   │   ├── auth.js
+│   │   ├── users.js
+│   │   ├── records.js
+│   │   └── dashboard.js
+│
+│   ├── middleware/        # Middleware
+│   │   ├── auth.js
+│   │   ├── validators.js
+│   │   └── errorHandler.js
+│
+│   └── utils/
+│       └── seed.js        # Seed script
+│
 ├── .env
+├── .gitignore
 ├── package.json
 └── README.md
 ```
@@ -101,11 +131,7 @@ npm install
 
 ### Environment Setup
 
-```bash
-.env
-```
-
-Configure:
+Create `.env` file:
 
 ```
 PORT=5000
@@ -115,41 +141,60 @@ JWT_EXPIRES_IN=7d
 NODE_ENV=development
 ```
 
-### Run Project
+### Run Server
 
 ```bash
 npm run dev
 ```
 
+Server runs at:
+👉 http://localhost:5000
+
 ---
 
-## User Roles & Access Control
+## API Documentation (Swagger)
 
-| Role    | Permissions                    |
-| ------- | ------------------------------ |
-| Viewer  | View dashboard + records       |
-| Analyst | View + analytics               |
-| Admin   | Full control (users + records) |
+Swagger UI available at:
+
+👉 http://localhost:5000/api-docs
+
+You can:
+
+* View all endpoints
+* Test APIs directly
+* Understand request/response structure
+
+---
+
+## Role-Based Access Control
+
+Roles are defined in `config/roles.js`.
+
+| Role    | Permissions                   |
+| ------- | ----------------------------- |
+| Viewer  | View records & activity       |
+| Analyst | View records + analytics      |
+| Admin   | Full access (users + records) |
 
 ### Implementation
 
-* JWT-based authentication
-* Role validation using middleware
-* Unauthorized access blocked at route level
+* JWT authentication
+* Role-based middleware authorization
+* Route-level protection
 
 ---
 
 ## Financial Records Module
 
-Supports:
+### Features
 
-* Create / Read / Update / Delete (CRUD)
-* Filtering by:
+* CRUD operations
+* Filtering:
 
-  * Type (income/expense)
+  * Type (income / expense)
   * Category
   * Date range
-* Search (notes)
+* Search by notes
 * Pagination
 
 ### Design Decisions
@@ -159,31 +204,28 @@ Supports:
 
 ---
 
-## Dashboard Analytics APIs
+## Dashboard APIs
 
-Implemented aggregation-based endpoints:
+Provides aggregated insights:
 
 * Total income & expenses
 * Net balance
-* Category-wise breakdown
+* Category totals
 * Monthly trends
 * Weekly trends
 * Recent activity
 
-### Why This Matters
+### Purpose
 
-These APIs demonstrate backend capability beyond CRUD by:
-
-* Using aggregation pipelines
-* Structuring data for frontend dashboards
-* Handling real-world reporting use cases
+* Demonstrates aggregation logic
+* Supports real-world dashboard requirements
 
 ---
 
 ## Authentication & Security
 
 * JWT-based authentication
-* Password hashing using bcrypt
+* Password hashing (bcrypt)
 * Rate limiting:
 
   * Global: 100 requests / 15 min
@@ -193,8 +235,8 @@ These APIs demonstrate backend capability beyond CRUD by:
 
 ## Validation & Error Handling
 
-* Request validation using `express-validator`
-* Centralized error handler
+* Input validation using express-validator
+* Centralized error handling middleware
 * Consistent response format:
 
 ```json
@@ -206,7 +248,7 @@ These APIs demonstrate backend capability beyond CRUD by:
 
 ---
 
-## Seed Data
+## Seed Script
 
 Run:
 
@@ -221,57 +263,56 @@ Creates test users for all roles.
 ## Assumptions
 
 1. Self-registration defaults to Viewer role
-2. Financial records use predefined categories
-3. Soft delete is required for audit integrity
-4. Only Admin can modify records via API
+2. Categories are predefined for consistency
+3. Soft delete ensures audit integrity
+4. Only Admin can modify records
 
 ---
 
 ## Tradeoffs
 
-| Decision         | Alternative | Reason                            |
-| ---------------- | ----------- | --------------------------------- |
-| MongoDB          | SQL DB      | Faster iteration, flexible schema |
-| JWT              | Sessions    | Stateless, scalable               |
-| Soft Delete      | Hard Delete | Data safety                       |
-| Fixed Categories | Dynamic     | Better aggregation                |
+| Decision         | Alternative | Reason           |
+| ---------------- | ----------- | ---------------- |
+| MongoDB          | SQL DB      | Flexible schema  |
+| JWT              | Sessions    | Stateless        |
+| Soft Delete      | Hard Delete | Data safety      |
+| Fixed Categories | Dynamic     | Better analytics |
 
 ---
 
-## Possible Improvements
+## Future Improvements
 
-* Refresh tokens & authentication hardening
+* Refresh tokens
 * Unit & integration tests
-* Role-based caching for dashboard
+* Audit logging
 * Export reports (CSV/PDF)
-* Audit logs for user actions
+* Real-time updates (WebSockets)
 
 ---
 
-## Assignment Mapping
+## Assignment Coverage
 
-| Requirement            | Status              |
-| ---------------------- | ------------------- |
-| User & Role Management | ✅ Implemented       |
-| Financial Records CRUD | ✅ Implemented       |
-| Dashboard APIs         | ✅ Implemented       |
-| Access Control         | ✅ Middleware-based  |
-| Validation & Errors    | ✅ Strong handling   |
-| Data Persistence       | ✅ MongoDB           |
-| Optional Enhancements  | ✅ Multiple included |
+| Requirement            | Status             |
+| ---------------------- | ------------------ |
+| User & Role Management | ✅ Completed        |
+| Financial Records CRUD | ✅ Completed        |
+| Dashboard APIs         | ✅ Completed        |
+| Access Control         | ✅ Middleware-based |
+| Validation & Errors    | ✅ Implemented      |
+| Data Persistence       | ✅ MongoDB          |
+| Optional Enhancements  | ✅ Implemented      |
 
 ---
 
 ## Conclusion
 
-This project demonstrates a structured approach to backend engineering by combining:
+This project demonstrates a backend system designed with:
 
-* Clean architecture
-* Secure authentication
-* Proper access control
+* Clean and modular architecture
+* Strong access control
 * Scalable API design
-* Thoughtful tradeoffs
+* Real-world financial data handling
 
-The focus was not just on making APIs work, but on designing a system that is **maintainable, extensible, and logically consistent**.
+The focus was not just on functionality but on building a **maintainable, extensible, and production-oriented system**.
 
 ---
